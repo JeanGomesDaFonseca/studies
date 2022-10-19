@@ -1,21 +1,39 @@
 import React from "react";
+import { ITarefa } from "../../types/Tarefa";
 import Botao from "../Botao";
 import style from "./Formulario.module.scss";
+import {v4 as uuidv4} from 'uuid'
 
-class Formulario extends React.Component {
+class Formulario extends React.Component<{
+  setTarefas: React.Dispatch<React.SetStateAction<ITarefa[]>>;
+}> {
   //É dessa maneira que se usa o useState com class components.  (graças a Deus que hojé se usa os Hooks)
   state = {
     tarefa: "",
     tempo: "00:00",
   };
-//Essa é a forma para declarar uma função
+  //Essa é a forma para declarar uma FUNCTION
   adicionarTarefa(evento: React.FormEvent<HTMLFormElement>) {
     evento.preventDefault();
+    this.props.setTarefas((tarefasAntigas) => [
+      ...tarefasAntigas,
+      { ...this.state, 
+        selecionado: false, 
+        completado: false,
+        id: uuidv4(),
+  }]);
+    this.setState({
+      tarefa: "",
+      tempo: "00:00",
+    });
   }
 
   render() {
     return (
-      <form className={style.novaTarefa} onSubmit={this.adicionarTarefa.bind(this)}>
+      <form
+        className={style.novaTarefa}
+        onSubmit={this.adicionarTarefa.bind(this)}
+      >
         <div className={style.inputContainer}>
           <label htmlFor="tarefa">Adicione um novo estudo</label>
           <input
@@ -46,9 +64,7 @@ class Formulario extends React.Component {
             required
           />
         </div>
-        <Botao
-        type="submit">
-          Adicionar</Botao>
+        <Botao type="submit">Adicionar</Botao>
       </form>
     );
   }
